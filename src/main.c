@@ -45,7 +45,8 @@ void generateStage(int maxCircles, Circle *circles) {
   }
 }
 
-void renderStage(Vector2 mousePoint, int maxCircles, Circle *circles) {
+void renderStage(Vector2 mousePoint, int maxCircles, Circle *circles,
+                 int *score) {
   for (int i = 0; i < maxCircles; i++) {
     if (!circles[i].isClicked && circles[i].active) {
       DrawCircle(circles[i].position.x, circles[i].position.y,
@@ -63,11 +64,12 @@ void renderStage(Vector2 mousePoint, int maxCircles, Circle *circles) {
 
       circles[i].isClicked = true;
       circles[i + 1].active = true;
+      *score = (int)circles[i].points;
     }
   }
 }
 
-void restartStage(int maxCircles, Circle *circles) {
+void restartStage(int maxCircles, Circle *circles, int *score) {
   int counter = 0;
   for (int i = 0; i < maxCircles; i++) {
     if (circles[i].isClicked) {
@@ -77,6 +79,7 @@ void restartStage(int maxCircles, Circle *circles) {
   if (counter == maxCircles) {
     memset(circles, 0, sizeof *circles);
     generateStage(maxCircles, circles);
+    *score = 0;
   }
 }
 int main(void) {
@@ -86,11 +89,13 @@ int main(void) {
   Vector2 mousePoint = {0.0f, 0.0f};
 
   GameScreen currentScreen = INTRO;
-  if (currentScreen == GAMEPLAY) {
-    const int maxCircles = 4;
-    Circle circles[maxCircles];
-    generateStage(maxCircles, circles);
-  }
+
+  int score = 0;
+
+  const int maxCircles = 4;
+  Circle circles[maxCircles];
+  generateStage(maxCircles, circles);
+
   while (!WindowShouldClose()) {
     mousePoint = GetMousePosition();
     BeginDrawing();
@@ -104,8 +109,9 @@ int main(void) {
       }
     } break;
     case GAMEPLAY: {
-      renderStage(mousePoint, maxCircles, circles);
-      restartStage(maxCircles, circles);
+      DrawText(TextFormat("Score: %02i", score), 20, 20, 40, LIGHTGRAY);
+      renderStage(mousePoint, maxCircles, circles, &score);
+      restartStage(maxCircles, circles, &score);
     } break;
     default:
       break;
