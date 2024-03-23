@@ -51,8 +51,8 @@ void renderStage(Vector2 mousePoint, int maxCircles, Circle *circles) {
       DrawCircle(circles[i].position.x, circles[i].position.y,
                  circles[i].radius, RED);
       DrawText(TextFormat("%02i", circles[i].points),
-               circles[i].position.x - circles[i].radius / 2,
-               circles[i].position.y - circles[i].radius / 2, 40, BLACK);
+               (circles[i].position.x - circles[i].radius / 2),
+               (circles[i].position.y - circles[i].radius / 2), 40, BLACK);
     } else if (!circles[i].isClicked) {
       DrawCircle(circles[i].position.x, circles[i].position.y,
                  circles[i].radius, GRAY);
@@ -86,18 +86,19 @@ int main(void) {
   Vector2 mousePoint = {0.0f, 0.0f};
 
   GameScreen currentScreen = INTRO;
-  const int maxCircles = 4;
-  Circle circles[maxCircles];
-  generateStage(maxCircles, circles);
-
+  if (currentScreen == GAMEPLAY) {
+    const int maxCircles = 4;
+    Circle circles[maxCircles];
+    generateStage(maxCircles, circles);
+  }
   while (!WindowShouldClose()) {
     mousePoint = GetMousePosition();
     BeginDrawing();
     switch (currentScreen) {
     case INTRO: {
       DrawText("Press Space to start!",
-               (WIDTH / 2) - TextLength("Press Space to start!") / 2,
-               HEIGHT / 2, 20, LIGHTGRAY);
+               (WIDTH / 2) - MeasureText("Press Space to start!", 50) / 2,
+               HEIGHT / 2, 50, BLACK);
       if (IsKeyPressed(32)) {
         currentScreen = GAMEPLAY;
       }
