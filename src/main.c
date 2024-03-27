@@ -21,11 +21,12 @@ typedef enum GameScreen { INTRO, GAMEPLAY } GameScreen;
 Circle generateCicle(int points) {
   Circle circle;
   circle.radius = 50.0f;
-  float x = rand() % (WIDTH - (int)circle.radius * 2 + 1 - (int)circle.radius) +
+  float x = rand() % (GetScreenWidth() - (int)circle.radius * 2 + 1 -
+                      (int)circle.radius) +
             (int)circle.radius;
-  float y =
-      rand() % (HEIGHT - (int)circle.radius * 2 + 1 - (int)circle.radius) +
-      (int)circle.radius;
+  float y = rand() % (GetScreenHeight() - (int)circle.radius * 2 + 1 -
+                      (int)circle.radius) +
+            (int)circle.radius;
   circle.id = points;
   if (points == 1) {
     circle.active = true;
@@ -46,16 +47,18 @@ void generateStage(int maxCircles, Circle *circles) {
 }
 
 void renderStage(int maxCircles, Circle *circles) {
+  const int fontSize = 50;
   for (int i = 0; i < maxCircles; i++) {
     if (!circles[i].isClicked && circles[i].active) {
       DrawCircle(circles[i].position.x, circles[i].position.y,
-                 circles[i].radius, RED);
-      DrawText(TextFormat("%02i", circles[i].points),
-               (circles[i].position.x - circles[i].radius / 2),
-               (circles[i].position.y - circles[i].radius / 2), 40, BLACK);
+                 circles[i].radius, MAROON);
+      const char *points = TextFormat("%02i", circles[i].points);
+      DrawText(points,
+               circles[i].position.x - (float)MeasureText(points, fontSize) / 2,
+               circles[i].position.y - (float)fontSize / 2, fontSize, BEIGE);
     } else if (!circles[i].isClicked) {
       DrawCircle(circles[i].position.x, circles[i].position.y,
-                 circles[i].radius, GRAY);
+                 circles[i].radius, LIGHTGRAY);
     }
   }
 }
@@ -87,7 +90,7 @@ void restartStage(int maxCircles, Circle *circles, int *score) {
 }
 int main(void) {
   srand(time(NULL));
-  InitWindow(WIDTH, HEIGHT, "OSU o theos na to kanei");
+  InitWindow(WIDTH, HEIGHT, "OSU Wanna Be");
 
   InitAudioDevice();
 
@@ -110,7 +113,7 @@ int main(void) {
     case INTRO: {
       DrawText("Press Space to start!",
                (WIDTH / 2) - MeasureText("Press Space to start!", 50) / 2,
-               HEIGHT / 2, 50, BLACK);
+               HEIGHT / 2 - 50 / 2, 50, BLACK);
       if (IsKeyPressed(32)) {
         currentScreen = GAMEPLAY;
       }
@@ -119,7 +122,7 @@ int main(void) {
       handleClick(&mousePoint, maxCircles, circles, &score, &mouseClick);
       renderStage(maxCircles, circles);
       restartStage(maxCircles, circles, &score);
-      DrawText(TextFormat("Score: %02i", score), 20, 20, 40, LIGHTGRAY);
+      DrawText(TextFormat("Score: %02i", score), 20, 20, 40, BLACK);
     } break;
     default:
       break;
