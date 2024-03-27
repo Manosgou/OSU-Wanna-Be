@@ -116,10 +116,10 @@ int main(void) {
       }
     } break;
     case GAMEPLAY: {
-      DrawText(TextFormat("Score: %02i", score), 20, 20, 40, LIGHTGRAY);
       handleClick(&mousePoint, maxCircles, circles, &score, &mouseClick);
       renderStage(maxCircles, circles);
       restartStage(maxCircles, circles, &score);
+      DrawText(TextFormat("Score: %02i", score), 20, 20, 40, LIGHTGRAY);
     } break;
     default:
       break;
