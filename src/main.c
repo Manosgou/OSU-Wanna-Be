@@ -45,8 +45,7 @@ void generateStage(int maxCircles, Circle *circles) {
   }
 }
 
-void renderStage(Vector2 mousePoint, int maxCircles, Circle *circles,
-                 int *score) {
+void renderStage(int maxCircles, Circle *circles) {
   for (int i = 0; i < maxCircles; i++) {
     if (!circles[i].isClicked && circles[i].active) {
       DrawCircle(circles[i].position.x, circles[i].position.y,
@@ -58,17 +57,21 @@ void renderStage(Vector2 mousePoint, int maxCircles, Circle *circles,
       DrawCircle(circles[i].position.x, circles[i].position.y,
                  circles[i].radius, GRAY);
     }
-    if (CheckCollisionPointCircle(mousePoint, circles[i].position,
+  }
+}
+void handleClick(Vector2 *mousePoint, int maxCircles, Circle *circles,
+                 int *score, Sound *mouseClick) {
+  for (int i = 0; i < maxCircles; i++) {
+    if (CheckCollisionPointCircle(*mousePoint, circles[i].position,
                                   circles[i].radius) &&
         IsMouseButtonDown(MOUSE_BUTTON_LEFT) && circles[i].active) {
-
+      PlaySound(*mouseClick);
       circles[i].isClicked = true;
       circles[i + 1].active = true;
       *score = (int)circles[i].points;
     }
   }
 }
-
 void restartStage(int maxCircles, Circle *circles, int *score) {
   int counter = 0;
   for (int i = 0; i < maxCircles; i++) {
@@ -85,6 +88,10 @@ void restartStage(int maxCircles, Circle *circles, int *score) {
 int main(void) {
   srand(time(NULL));
   InitWindow(WIDTH, HEIGHT, "OSU o theos na to kanei");
+
+  InitAudioDevice();
+
+  Sound mouseClick = LoadSound("../../resources/click.mp3");
 
   Vector2 mousePoint = {0.0f, 0.0f};
 
@@ -110,7 +117,8 @@ int main(void) {
     } break;
     case GAMEPLAY: {
       DrawText(TextFormat("Score: %02i", score), 20, 20, 40, LIGHTGRAY);
-      renderStage(mousePoint, maxCircles, circles, &score);
+      handleClick(&mousePoint, maxCircles, circles, &score, &mouseClick);
+      renderStage(maxCircles, circles);
       restartStage(maxCircles, circles, &score);
     } break;
     default:
@@ -122,6 +130,8 @@ int main(void) {
     EndDrawing();
   }
 
+  UnloadSound(mouseClick);
+  CloseAudioDevice();
   CloseWindow();
 
   return 0;
