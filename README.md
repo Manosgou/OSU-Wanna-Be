@@ -12,4 +12,6 @@ Use the following commands to generate build files in separate directory and bui
 cmake -B build && cmake --build build
 ```
 
+After the command is successfully executed, a folder named `build` will be created inside the `/src` directory. The folder will contain all the necessary build files, including the executable binary named `example` and also a `Makefile` for compiling the source code.
+
 _Created using RayLib version 5.0, no external dependencies required._
